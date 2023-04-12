@@ -10,7 +10,6 @@ import re
 
 import cairocffi as cairo
 import cffi
-import pyphen
 
 from .logger import LOGGER
 
@@ -1086,7 +1085,7 @@ def split_first_line(text, style, context, max_width, justification_spacing,
 
     # Step #4: Try to hyphenate
     hyphens = style['hyphens']
-    lang = style['lang'] and pyphen.language_fallback(style['lang'])
+    lang = style['lang']
     total, left, right = style['hyphenate_limit_chars']
     hyphenated = False
     soft_hyphen = '\u00ad'
@@ -1145,14 +1144,6 @@ def split_first_line(text, style, context, max_width, justification_spacing,
             soft_hyphen_indexes.reverse()
             dictionary_iterations = [
                 next_word[:i + 1] for i in soft_hyphen_indexes]
-        elif auto_hyphenation:
-            dictionary_key = (lang, left, right, total)
-            dictionary = context.dictionaries.get(dictionary_key)
-            if dictionary is None:
-                dictionary = pyphen.Pyphen(lang=lang, left=left, right=right)
-                context.dictionaries[dictionary_key] = dictionary
-            dictionary_iterations = [
-                start for start, end in dictionary.iterate(next_word)]
         else:
             dictionary_iterations = []
 
